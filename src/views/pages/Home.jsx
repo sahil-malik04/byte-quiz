@@ -12,7 +12,7 @@ const Home = () => {
       </p>
 
       <button
-        className="bg-blue-400 p-2 w-28 font-semibold cursor-pointer mt-8"
+        className="bg-gray-600 p-2 w-28 font-semibold cursor-pointer mt-8"
         onClick={() => navigate("/quiz")}
       >
         {" "}

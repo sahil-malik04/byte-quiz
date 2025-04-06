@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { getQuizzes } from "../../utils/quizData";
-import Quizzes from "./Quizzes";
-import { useNavigate } from "react-router-dom";
+import Quizzes from "../../components/quiz/Quizzes";
+import FinishQuiz from "../../components/quiz/FinishQuiz";
+import BackBtn from "../../components/BackBtn";
 
 const Quiz = () => {
-  const navigate = useNavigate();
   const [quizzes, setQuizzes] = useState([]);
   const [currentQuiz, setCurrentQuiz] = useState(null);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [correctAnswer, setCorrectAnswer] = useState("");
+  const [score, setScore] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
 
   const fetchQuizzes = async () => {
     const data = await getQuizzes();
@@ -24,27 +26,43 @@ const Quiz = () => {
   }
 
   const handleAnswer = (answer) => {
-    const correctAnswer = currentQuiz?.questions[questionIndex]?.correctAnswer;
-    if (answer == correctAnswer) {
+    if (correctAnswer) return;
+    const getCorrectAnswer =
+      currentQuiz?.questions[questionIndex]?.correctAnswer;
+    if (answer == getCorrectAnswer) {
+      setScore((prev) => prev + 1);
+      if (questionIndex + 1 < currentQuiz?.questions?.length) {
+        setQuestionIndex((prev) => prev + 1);
+      } else {
+        setIsFinished(true);
+      }
     } else {
-      setCorrectAnswer(correctAnswer);
+      setCorrectAnswer(getCorrectAnswer);
     }
   };
 
+  if (isFinished) {
+    return <FinishQuiz score={score} currentQuiz={currentQuiz} />;
+  }
+
   const question = currentQuiz?.questions[questionIndex];
   const options = [...question.incorrectAnswers, question.correctAnswer].sort(
-    () => Math.random()
+    () => Math.random() - 0.5
   );
 
   return (
     <>
       <div className="text-center m-4 p-4">
+        <h5 className="text-right text-xl text-yellow-400 font-semibold">
+          {" "}
+          {currentQuiz?.title}
+        </h5>
         <h3 className="mb-8 text-lg">
           <strong> {question?.text}</strong>
         </h3>
 
         {options?.map((item) => (
-          <div className="flex items-center justify-center mt-5">
+          <div className="flex items-center justify-center mt-5" key={item}>
             <button
               className={`p-2 w-50 ${
                 correctAnswer ? "cursor-default" : "cursor-pointer"
@@ -63,12 +81,10 @@ const Quiz = () => {
         ))}
 
         {correctAnswer && (
-          <button
-            className="w-75 border border-gray-300 text-white mt-8"
-            onClick={() => navigate("/")}
-          >
-            Go Back
-          </button>
+          <div className="mt-8">
+            <h4 className="font-semibold"> Your final Score is: {score}</h4>
+            <BackBtn />
+          </div>
         )}
       </div>
     </>
