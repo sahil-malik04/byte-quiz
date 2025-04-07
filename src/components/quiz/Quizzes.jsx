@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 
-const Quizzes = ({ quizzes, setCurrentQuiz }) => {
+const Quizzes = ({ quizzes, setCurrentQuiz, loadMoreQuizzes }) => {
+  const [isLoadMore, setIsLoadMore] = useState(false);
   return (
     <div className="text-center">
       <div className="mb-8">
@@ -18,6 +19,19 @@ const Quizzes = ({ quizzes, setCurrentQuiz }) => {
         ))
       ) : (
         <p className="text-xl text-purple-600">Loading... </p>
+      )}
+      {quizzes?.length && !isLoadMore ? (
+        <button
+          className="bg-gray-600 p-2 font-semibold cursor-pointer mt-8"
+          onClick={() => {
+            loadMoreQuizzes();
+            setIsLoadMore(true);
+          }}
+        >
+          Load more quizzes...
+        </button>
+      ) : (
+        ""
       )}
     </div>
   );

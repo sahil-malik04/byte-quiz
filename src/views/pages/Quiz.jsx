@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getQuizzes } from "../../utils/quizData";
+import { getMoreQuizzes, getQuizzes } from "../../utils/quizData";
 import Quizzes from "../../components/quiz/Quizzes";
 import FinishQuiz from "../../components/quiz/FinishQuiz";
 import BackBtn from "../../components/BackBtn";
@@ -21,8 +21,19 @@ const Quiz = () => {
     fetchQuizzes();
   }, []);
 
+  const loadMoreQuizzes = async () => {
+    const data = await getMoreQuizzes();
+    setQuizzes((prev) => [...prev, ...data]);
+  };
+
   if (!currentQuiz) {
-    return <Quizzes quizzes={quizzes} setCurrentQuiz={setCurrentQuiz} />;
+    return (
+      <Quizzes
+        quizzes={quizzes}
+        setCurrentQuiz={setCurrentQuiz}
+        loadMoreQuizzes={loadMoreQuizzes}
+      />
+    );
   }
 
   const handleAnswer = (answer) => {
